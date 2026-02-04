@@ -1,5 +1,5 @@
-// main.js
-import { AutoLineReveal } from './auto-line-reveal.js';
+// main.ts
+import { AutoLineReveal } from './auto-line-reveal';
 
 const reveal = new AutoLineReveal({
   root: document,
@@ -8,4 +8,4 @@ const reveal = new AutoLineReveal({
 
 reveal.init({ bindResize: true });
 
-window.reveal = reveal;
+//window.reveal = reveal;

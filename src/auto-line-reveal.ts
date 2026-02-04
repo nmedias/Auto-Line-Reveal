@@ -5,12 +5,64 @@
 //   window.addEventListener('resize', debounce(() => r.rebuild(), 150));
 //   // later: r.destroy();
 
+/** @internal */
+type RevealMode = 'linear' | 'immediate';
+/** @internal */
+type LinearPolicy = 'strict' | 'skip-unseen';
+/** @internal */
+type LineAnim = 'slide-clip' | 'fade' | 'blur-in' | 'diag-slice';
+
+/** @internal */
+type BlockConfig = {
+  mode: RevealMode;
+  group: string;
+  policy: LinearPolicy;
+  anim: LineAnim;
+  animMs: number | null;
+  intensity: number;
+  debug: boolean;
+};
+
+/** @internal */
+type GroupState = {
+  ready: boolean;
+  started: boolean;
+  done: boolean;
+};
+
+/** @internal */
+type GroupQueue = {
+  blocks: HTMLElement[];
+  state: WeakMap<HTMLElement, GroupState>;
+};
+
+/** @internal */
+type AutoLineRevealOptions = {
+  root?: Document | Element;
+  selector?: string;
+  debounceMs?: number;
+};
+
+/** @internal */
+type InitOptions = {
+  bindResize?: boolean;
+};
+
 export class AutoLineReveal {
+  root: Document | Element;
+  selector: string;
+  prefersReducedMotion: boolean;
+  _blockObserver: IntersectionObserver | null;
+  _running: WeakMap<HTMLElement, AbortController>;
+  _groupQueues: Map<string, GroupQueue>;
+  _resizeHandler: ((...args: unknown[]) => void) | null;
+  _debounceMs: number;
+
   constructor({
     root = document,
     selector = '[data-split-lines]',
     debounceMs = 150,
-  } = {}) {
+  }: AutoLineRevealOptions = {}) {
     this.root = root;
     this.selector = selector;
 
@@ -27,7 +79,7 @@ export class AutoLineReveal {
 
   // ---------- Public API ----------
 
-  init({ bindResize = false } = {}) {
+  init({ bindResize = false }: InitOptions = {}) {
     this.rebuild();
 
     if (bindResize) {
@@ -78,7 +130,7 @@ export class AutoLineReveal {
 
   // ---------- Config ----------
 
-  _getBlockConfig(block) {
+  _getBlockConfig(block: HTMLElement): BlockConfig {
     const mode = (block.dataset.revealMode || 'immediate').toLowerCase();
     const group = (block.dataset.revealGroup || 'default').toString();
     const policyRaw = (
@@ -86,18 +138,19 @@ export class AutoLineReveal {
     ).toLowerCase();
 
     const animRaw = (block.dataset.lineAnim || 'slide-clip').toLowerCase();
-    const anim =
+    const anim: LineAnim =
       animRaw === 'fade' || animRaw === 'blur-in' || animRaw === 'diag-slice'
         ? animRaw
         : 'slide-clip';
 
     const animMs = this._clampNumber(block.dataset.lineAnimMs, 80, 6000, null);
-    const intensity = this._clampNumber(
+    let intensity = this._clampNumber(
       block.dataset.lineAnimIntensity,
       0.25,
       2.0,
       1
     );
+
 
     return {
       mode: mode === 'linear' ? 'linear' : 'immediate',
@@ -110,7 +163,7 @@ export class AutoLineReveal {
     };
   }
 
-  _revealDuration() {
+  _revealDuration(): number {
     const v = getComputedStyle(document.documentElement)
       .getPropertyValue('--reveal-ms')
       .trim();
@@ -120,12 +173,12 @@ export class AutoLineReveal {
 
   // ---------- DOM helpers ----------
 
-  _getBlocks() {
+  _getBlocks(): HTMLElement[] {
     const scope = this.root instanceof Element ? this.root : document;
-    return Array.from(scope.querySelectorAll(this.selector));
+    return Array.from(scope.querySelectorAll(this.selector)) as HTMLElement[];
   }
 
-  _applyRevealClasses(block) {
+  _applyRevealClasses(block: HTMLElement) {
     const cfg = this._getBlockConfig(block);
 
     block.classList.add('reveal');
@@ -156,7 +209,7 @@ export class AutoLineReveal {
     block.style.setProperty('--anim-intensity', String(cfg.intensity));
   }
 
-  _splitIntoLines(el) {
+  _splitIntoLines(el: HTMLElement): NodeListOf<HTMLElement> {
     // same logic, just scoped inside instance
     const text = el.textContent.replace(/\s+/g, ' ').trim();
     el.textContent = '';
@@ -166,8 +219,8 @@ export class AutoLineReveal {
     el.appendChild(linesContainer);
 
     const words = text.split(' ');
-    const wordSpans = [];
-    const spaceNodes = [];
+    const wordSpans: HTMLSpanElement[] = [];
+    const spaceNodes: Text[] = [];
 
     words.forEach((w, i) => {
       const s = document.createElement('span');
@@ -184,11 +237,12 @@ export class AutoLineReveal {
     });
 
     // group by layout lines
-    const lines = [];
-    let currentTop = null;
-    let currentLineWords = [];
+    const lines: number[][] = [];
+    let currentTop: number | null = null;
+    let currentLineWords: number[] = [];
 
-    for (const ws of wordSpans) {
+    for (let i = 0; i < wordSpans.length; i++) {
+      const ws = wordSpans[i];
       const top = ws.offsetTop;
       if (currentTop === null) currentTop = top;
 
@@ -197,7 +251,7 @@ export class AutoLineReveal {
         currentLineWords = [];
         currentTop = top;
       }
-      currentLineWords.push(ws);
+      currentLineWords.push(i);
     }
     if (currentLineWords.length) lines.push(currentLineWords);
 
@@ -211,10 +265,11 @@ export class AutoLineReveal {
       const inner = document.createElement('span');
       inner.className = 'reveal__inner';
 
-      lineWords.forEach((ws, j) => {
-        inner.appendChild(ws);
+      lineWords.forEach((wordIndex, j) => {
+        const word = wordSpans[wordIndex];
+        inner.appendChild(word);
         if (j < lineWords.length - 1) {
-          const space = spaceNodes[wordSpans.indexOf(ws)];
+          const space = spaceNodes[wordIndex];
           if (space) inner.appendChild(space);
         }
       });
@@ -224,12 +279,12 @@ export class AutoLineReveal {
     });
 
     linesContainer.replaceChildren(frag);
-    return linesContainer.querySelectorAll('.reveal__line');
+    return linesContainer.querySelectorAll('.reveal__line') as NodeListOf<HTMLElement>;
   }
 
   // ---------- Animation primitive ----------
 
-  _animateLine(line) {
+  _animateLine(line: HTMLElement): Promise<void> {
     return new Promise((resolve) => {
       if (this.prefersReducedMotion) {
         line.classList.add('reveal__line--visible');
@@ -237,7 +292,7 @@ export class AutoLineReveal {
         return;
       }
 
-      const block = line.closest(this.selector);
+      const block = line.closest(this.selector) as HTMLElement | null;
       const cfg = block ? this._getBlockConfig(block) : null;
 
       const durationMs =
@@ -272,24 +327,29 @@ export class AutoLineReveal {
 
   // ---------- Per-line visibility gate ----------
 
-  _createVisibilityGate(lines) {
-    const gate = new Map();
+  _createVisibilityGate(lines: NodeListOf<HTMLElement> | HTMLElement[]) {
+    const gate = new Map<
+      HTMLElement,
+      { promise: Promise<void>; resolve: () => void; resolved: boolean }
+    >();
 
-    const isAlreadyVisible = (el) => {
+    const isAlreadyVisible = (el: HTMLElement) => {
       const r = el.getBoundingClientRect();
       const vh = window.innerHeight || document.documentElement.clientHeight;
       return r.bottom > 0 && r.top < vh * 0.9;
     };
 
     lines.forEach((line) => {
-      let resolveFn;
-      const promise = new Promise((res) => (resolveFn = res));
+      let resolveFn= () => {};
+      const promise = new Promise<void>((res) => {
+        resolveFn = res;
+      });
 
       gate.set(line, { promise, resolve: resolveFn, resolved: false });
 
       if (isAlreadyVisible(line)) {
         const rec = gate.get(line);
-        rec.resolved = true;
+        rec && (rec.resolved = true);
         resolveFn();
       }
     });
@@ -298,7 +358,7 @@ export class AutoLineReveal {
       (entries) => {
         for (const e of entries) {
           if (!e.isIntersecting) continue;
-          const rec = gate.get(e.target);
+          const rec = gate.get(e.target as HTMLElement);
           if (!rec || rec.resolved) continue;
           rec.resolved = true;
           rec.resolve();
@@ -316,7 +376,10 @@ export class AutoLineReveal {
     return { gate, io };
   }
 
-  async _playLinesSequentiallyWhenVisible(lines, abortSignal) {
+  async _playLinesSequentiallyWhenVisible(
+    lines: NodeListOf<HTMLElement> | HTMLElement[],
+    abortSignal: AbortSignal
+  ): Promise<void> {
     const { gate, io } = this._createVisibilityGate(lines);
     try {
       for (const line of lines) {
@@ -335,7 +398,7 @@ export class AutoLineReveal {
 
   // ---------- Group orchestration ----------
 
-  _buildGroupQueue(groupName, blocks) {
+  _buildGroupQueue(groupName: string, blocks: HTMLElement[]) {
     const linearBlocks = blocks.filter((b) => {
       const cfg = this._getBlockConfig(b);
       return cfg.mode === 'linear' && cfg.group === groupName;
@@ -348,7 +411,7 @@ export class AutoLineReveal {
     this._groupQueues.set(groupName, { blocks: linearBlocks, state });
   }
 
-  _pumpGroupQueue(groupName, policy) {
+  _pumpGroupQueue(groupName: string, policy: LinearPolicy) {
     const q = this._groupQueues.get(groupName);
     if (!q) return;
 
@@ -396,8 +459,13 @@ export class AutoLineReveal {
     }
   }
 
-  _startBlock(block, st, groupName, policy) {
-    const lines = block.querySelectorAll('.reveal__line');
+  _startBlock(
+    block: HTMLElement,
+    st: GroupState,
+    groupName: string,
+    policy: LinearPolicy
+  ) {
+    const lines = block.querySelectorAll<HTMLElement>('.reveal__line');
     if (!lines.length) {
       st.done = true;
       this._pumpGroupQueue(groupName, policy);
@@ -424,11 +492,11 @@ export class AutoLineReveal {
 
   // ---------- Block observer ----------
 
-  _setupBlockObserver(blocks) {
+  _setupBlockObserver(blocks: HTMLElement[]) {
     if (this._blockObserver) this._blockObserver.disconnect();
     this._groupQueues.clear();
 
-    const groups = new Set();
+    const groups = new Set<string>();
     for (const b of blocks) {
       const cfg = this._getBlockConfig(b);
       if (cfg.mode === 'linear') groups.add(cfg.group);
@@ -437,10 +505,13 @@ export class AutoLineReveal {
 
     this._blockObserver = new IntersectionObserver(
       (entries) => {
+        const observer = this._blockObserver;
+        if (!observer) return;
+
         for (const entry of entries) {
           if (!entry.isIntersecting) continue;
 
-          const block = entry.target;
+          const block = entry.target as HTMLElement;
           const cfg = this._getBlockConfig(block);
 
           if (cfg.mode === 'immediate') {
@@ -449,12 +520,12 @@ export class AutoLineReveal {
             const ac = new AbortController();
             this._running.set(block, ac);
 
-            this._playLinesSequentiallyWhenVisible(
-              block.querySelectorAll('.reveal__line'),
+            void this._playLinesSequentiallyWhenVisible(
+              block.querySelectorAll<HTMLElement>('.reveal__line'),
               ac.signal
             );
 
-            this._blockObserver.unobserve(block);
+            observer.unobserve(block);
             continue;
           }
 
@@ -464,7 +535,7 @@ export class AutoLineReveal {
           const st = q.state.get(block);
           if (st && !st.ready) st.ready = true;
 
-          this._blockObserver.unobserve(block);
+          observer.unobserve(block);
           this._pumpGroupQueue(cfg.group, cfg.policy);
         }
       },
@@ -487,17 +558,25 @@ export class AutoLineReveal {
 
   // ---------- Utilities ----------
 
-  _debounce(fn, ms = 120) {
-    let t;
-    return (...args) => {
-      clearTimeout(t);
+  _debounce(fn: (...args: unknown[]) => void, ms = 120) {
+    let t: ReturnType<typeof setTimeout> | undefined;
+    return (...args: unknown[]) => {
+      if (t) clearTimeout(t);
       t = setTimeout(() => fn(...args), ms);
     };
   }
 
-  _clampNumber(n, min, max, fallback) {
+  _clampNumber(n: unknown, min: number, max: number, fallback: null): number | null;
+  _clampNumber(n: unknown, min: number, max: number, fallback: number): number;
+  _clampNumber(
+    n: unknown,
+    min: number,
+    max: number,
+    fallback: number | null
+  ): number | null {
     const x = Number(n);
     if (!Number.isFinite(x)) return fallback;
     return Math.min(max, Math.max(min, x));
   }
+
 }

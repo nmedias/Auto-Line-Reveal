@@ -4,7 +4,7 @@ export default defineConfig({
   build: {
     minify: 'terser',
     lib: {
-      entry: 'src/index.js',
+      entry: 'src/index.ts',
       name: 'AutoLineReveal',
       formats: ['es', 'cjs'],
       fileName: (format) =>

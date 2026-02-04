@@ -5,13 +5,15 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && mkdir -p dist && cp src/style.css dist/style.css",
+    "build": "vite build && tsc -p tsconfig.build.json && mkdir -p dist && cp src/style.css dist/style.css",
     "preview": "vite preview"
   },
   "main": "./dist/auto-line-reveal.cjs",
   "module": "./dist/auto-line-reveal.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/auto-line-reveal.js",
       "require": "./dist/auto-line-reveal.cjs"
     },

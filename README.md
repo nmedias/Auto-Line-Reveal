@@ -22,6 +22,20 @@ const reveal = new AutoLineReveal({
 reveal.init({ bindResize: true });
 ```
 
+## TypeScript Usage
+
+```ts
+import { AutoLineReveal } from 'auto-line-reveal';
+import 'auto-line-reveal/style.css';
+
+const reveal = new AutoLineReveal({
+  root: document,
+  selector: '[data-split-lines]'
+});
+
+reveal.init({ bindResize: true });
+```
+
 ## Usage (CJS)
 
 ```js
