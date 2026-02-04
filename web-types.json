@@ -1,0 +1,45 @@
+{
+  "framework": "web-components",
+  "name": "auto-line-reveal",
+  "version": "0.1.0",
+  "contributions": {
+    "html": {
+      "tags": [
+        {
+          "name": "auto-line-reveal",
+          "description": "Reveal text line-by-line based on real layout lines.",
+          "attributes": [
+            {
+              "name": "reveal-mode",
+              "description": "immediate (default) or linear."
+            },
+            {
+              "name": "reveal-group",
+              "description": "Group name for linear sequencing."
+            },
+            {
+              "name": "linear-policy",
+              "description": "strict or skip-unseen (default)."
+            },
+            {
+              "name": "line-anim",
+              "description": "slide-clip (default), fade, blur-in, or diag-slice."
+            },
+            {
+              "name": "line-anim-ms",
+              "description": "Override line animation duration in ms."
+            },
+            {
+              "name": "line-anim-intensity",
+              "description": "Controls animation strength (e.g., 0.25 to 2.0)."
+            },
+            {
+              "name": "debug",
+              "description": "true or false to show reveal progress on each line."
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

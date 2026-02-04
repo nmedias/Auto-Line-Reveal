@@ -5,12 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && tsc -p tsconfig.build.json && mkdir -p dist && cp src/style.css dist/style.css",
+    "build": "node scripts/build-web-types.mjs && vite build && tsc -p tsconfig.build.json && mkdir -p dist && cp src/style.css dist/style.css",
     "preview": "vite preview"
   },
   "main": "./dist/auto-line-reveal.cjs",
   "module": "./dist/auto-line-reveal.js",
   "types": "./dist/index.d.ts",
+  "web-types": "./web-types.json",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -20,7 +21,8 @@
     "./style.css": "./dist/style.css"
   },
   "files": [
-    "dist"
+    "dist",
+    "web-types.json"
   ],
   "style": "./dist/style.css",
   "devDependencies": {
