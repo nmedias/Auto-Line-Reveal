@@ -1,0 +1,326 @@
+/* ==========================================================================
+   TOKENS / GLOBALS
+   ========================================================================== */
+
+:root {
+  --bg: #0b0c10;
+  --fg: #f2f2f2;
+  --muted: rgba(242, 242, 242, 0.6);
+
+  /* Default animation timing */
+  --reveal-ms: 800ms;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* Mask softness (used by slide-clip) */
+  --feather: 10%;
+}
+
+/* Makes custom property animatable for mask wipe */
+@property --reveal {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 0%;
+}
+
+/* ==========================================================================
+     BASE / PAGE
+     ========================================================================== */
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial,
+    sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+/* ==========================================================================
+     TYPOGRAPHY / DEMO LAYOUT (project scaffolding)
+     ========================================================================== */
+
+h1 {
+  border-bottom: 1px solid rgb(from var(--muted) r g b / 0.2);
+  padding-block: 16px;
+  margin-block: 1em;
+  font-weight: 250;
+  color: var(--muted);
+}
+
+h2 {
+  font-weight: 200;
+  color: var(--muted);
+}
+
+.stage {
+  padding: 10vh 6vw 16vh;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+p {
+  font-size: clamp(16px, 3.3vw, 24px);
+  line-height: 1.6;
+  font-weight: 200;
+  letter-spacing: -0.02em;
+  margin-block: 24px;
+  max-width: 55ch;
+}
+
+.bigtext {
+  font-size: clamp(34px, 5vw, 92px);
+  line-height: 1.4;
+  font-weight: 150;
+  letter-spacing: -0.02em;
+  margin: 0;
+  max-width: 15ch;
+}
+
+.spacer {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+.hint {
+  margin-top: 22px;
+  color: var(--muted);
+  font-size: 14px;
+  max-width: 60ch;
+}
+
+/* ==========================================================================
+     REVEAL COMPONENT (BEM)
+     - Block: .reveal  (applied to [data-split-lines])
+     - Elements:
+       .reveal__lines, .reveal__line, .reveal__inner, .reveal__word
+     - Modifiers:
+       .reveal--debug
+       .reveal--anim-slide-clip (default)
+       .reveal--anim-fade
+       .reveal--anim-blur-in
+       .reveal--anim-sheen
+     - State:
+       .reveal__line--visible
+     ========================================================================== */
+
+.reveal {
+  /* per-block override support */
+  --anim-ms: var(--reveal-ms);
+  --anim-ease: var(--ease);
+
+  /* intensity hook if you want it later (0.5 .. 1.5) */
+  --anim-intensity: 1;
+}
+
+.reveal__lines {
+  display: block;
+}
+
+/* ---- Debug overlay (shows computed --reveal) ---- */
+.reveal--debug .reveal__line {
+  position: relative;
+}
+
+.reveal--debug .reveal__line::before {
+  content: attr(data-reveal);
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 12px;
+  line-height: 1;
+  font-weight: 500;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 1;
+}
+
+/* ---- Shared element defaults ---- */
+.reveal__line {
+  display: block;
+  width: 100%;
+}
+
+.reveal__inner {
+  display: inline;
+}
+
+.reveal__word {
+  display: inline;
+  white-space: normal;
+}
+
+/* ==========================================================================
+     ANIMATION: SLIDE + CLIP (mask wipe)
+     Default / editorial reveal
+     ========================================================================== */
+
+.reveal--anim-slide-clip .reveal__line {
+  opacity: 0;
+  transform: translateY(calc(5px * var(--anim-intensity)));
+
+  /* animated cutoff value for mask */
+  --reveal: 0%;
+
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 1) calc(var(--reveal) - var(--feather)),
+    rgba(0, 0, 0, 1) var(--reveal),
+    rgba(0, 0, 0, 0) calc(var(--reveal) + var(--feather)),
+    rgba(0, 0, 0, 0) 100%
+  );
+  mask-image: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 1) calc(var(--reveal) - var(--feather)),
+    rgba(0, 0, 0, 1) var(--reveal),
+    rgba(0, 0, 0, 0) calc(var(--reveal) + var(--feather)),
+    rgba(0, 0, 0, 0) 100%
+  );
+
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+
+  transition: --reveal var(--anim-ms) var(--anim-ease),
+    opacity calc(var(--anim-ms) * 0.6) ease-out,
+    transform var(--anim-ms) var(--anim-ease);
+
+  will-change: opacity, transform;
+}
+
+.reveal--anim-slide-clip .reveal__line.reveal__line--visible {
+  --reveal: 100%;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---- Fallback if mask is missing: clip-path wipe ---- */
+@supports not (
+  (-webkit-mask-image: linear-gradient(#000, transparent)) or
+    (mask-image: linear-gradient(#000, transparent))
+) {
+  .reveal--anim-slide-clip .reveal__line {
+    overflow: hidden;
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path var(--anim-ms) var(--anim-ease),
+      opacity calc(var(--anim-ms) * 0.6) ease-out,
+      transform var(--anim-ms) var(--anim-ease);
+  }
+
+  .reveal--anim-slide-clip .reveal__line.reveal__line--visible {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* ==========================================================================
+     ANIMATION: FADE (minimal, readable)
+     ========================================================================== */
+
+.reveal--anim-fade .reveal__line {
+  opacity: 0;
+  transform: translateY(calc(1px * var(--anim-intensity)));
+  transition: opacity var(--anim-ms) var(--anim-ease),
+    transform var(--anim-ms) var(--anim-ease);
+  will-change: opacity, transform;
+}
+
+.reveal--anim-fade .reveal__line.reveal__line--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ==========================================================================
+     ANIMATION: BLUR-IN (premium / focus pull)
+     ========================================================================== */
+
+.reveal--anim-blur-in .reveal__line {
+  opacity: 0;
+  transform: translateY(calc(2px * var(--anim-intensity)));
+  transition: opacity var(--anim-ms) var(--anim-ease),
+    transform var(--anim-ms) var(--anim-ease);
+  will-change: opacity, transform;
+}
+
+.reveal--anim-blur-in .reveal__inner {
+  filter: blur(calc(5px * var(--anim-intensity)));
+  transition: filter var(--anim-ms) var(--anim-ease);
+  will-change: filter;
+}
+
+.reveal--anim-blur-in .reveal__line.reveal__line--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal--anim-blur-in .reveal__line.reveal__line--visible .reveal__inner {
+  filter: blur(0px);
+}
+
+/* ==========================================================================
+   ANIMATION: DIAG-SLICE (sharp diagonal cut from bottom)
+   ========================================================================== */
+
+.reveal--anim-diag-slice .reveal__line {
+  opacity: 0; /* wir lassen opacity an, der Schnitt macht die Arbeit */
+  transform: translateY(calc(2px * var(--anim-intensity)));
+  transition: clip-path var(--anim-ms) var(--anim-ease),
+    transform var(--anim-ms) var(--anim-ease);
+
+  will-change: clip-path, transform;
+
+  /* Start: unten "weg", mit diagonaler Kante */
+  clip-path: polygon(
+    0% 100%,
+    /* links unten */ 100% 100%,
+    /* rechts unten */ 100% 0%,
+    /* rechts etwas hoch */ 0% 85% /* links weniger hoch -> diagonal */
+  );
+}
+
+.reveal--anim-diag-slice .reveal__line.reveal__line--visible {
+  transform: translateY(0);
+  opacity: 1;
+
+  /* Ende: komplett sichtbar */
+  clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+}
+
+/* Fallback: wenn polygon-clip nicht geht, normaler bottom-inset reveal */
+@supports not (clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%)) {
+  .reveal--anim-diag-slice .reveal__line {
+    clip-path: inset(0 0 100% 0);
+  }
+  .reveal--anim-diag-slice .reveal__line.reveal__line--visible {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* ==========================================================================
+     ACCESSIBILITY: REDUCED MOTION
+     ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal__line,
+  .reveal__inner {
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
+  .reveal--anim-slide-clip .reveal__line {
+    --reveal: 100% !important;
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
+    clip-path: inset(0 0 0 0) !important;
+  }
+
+  .reveal--anim-sheen .reveal__inner::after {
+    display: none !important;
+  }
+}

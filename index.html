@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Auto Line Split Reveal (mask-image via @property + Sequential +
+      In-Viewport Gate)
+    </title>
+    <link rel="stylesheet" href="src/style.css" />
+  </head>
+  <body>
+    <div class="spacer" data-split-lines>
+      Scroll down — lines animate only when they become visible
+    </div>
+
+    <main class="stage">
+      <h1>Animation Variants</h1>
+
+      <div>
+        <h2>Clip Slide</h2>
+        <p
+          data-split-lines
+          data-reveal-mode="linear"
+          data-reveal-group="story-ani"
+          data-debug="false"
+          data-line-anim="slide-clip"
+          data-line-anim-ms="900"
+          data-line-anim-intensity=".2"
+        >
+          Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
+          nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,
+          sed diam voluptua. At vero eos et accusam et justo duo dolores et ea
+          rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem
+          ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur
+          sadipscing elitr,
+        </p>
+        <h2>Blur-In</h2>
+        <p
+          data-split-lines
+          data-reveal-mode="linear"
+          data-reveal-group="story-ani"
+          data-debug="false"
+          data-line-anim="blur-in"
+          data-line-anim-ms="900"
+          data-line-anim-intensity="0.5"
+        >
+          Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
+          nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,
+          sed diam voluptua. At vero eos et accusam et justo duo dolores et ea
+          rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem
+          ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur
+          sadipscing elitr,
+        </p>
+        <h2>Fade</h2>
+        <p
+          data-split-lines
+          data-reveal-mode="linear"
+          data-reveal-group="story-ani"
+          data-debug="false"
+          data-line-anim="fade"
+          data-line-anim-ms="900"
+          data-line-anim-intensity="1"
+        >
+          Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
+          nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,
+          sed diam voluptua. At vero eos et accusam et justo duo dolores et ea
+          rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem
+          ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur
+          sadipscing elitr,
+        </p>
+        <h2>Diag Slice</h2>
+        <p
+          data-split-lines
+          data-reveal-mode="linear"
+          data-reveal-group="story-ani"
+          data-debug="false"
+          data-line-anim="diag-slice"
+          data-line-anim-ms="1500"
+        >
+          Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
+          nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,
+          sed diam voluptua. At vero eos et accusam et justo duo dolores et ea
+          rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem
+          ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur
+          sadipscing elitr,
+        </p>
+      </div>
+      <div>
+        <h1>Immediate (default)</h1>
+        <p
+          class="bigtext"
+          data-split-lines
+          data-reveal-mode="immediate"
+          data-debug="false"
+        >
+          No framework, just browser physics.
+        </p>
+        <br />
+        <br />
+      </div>
+      <div>
+        <h1>Linear (linear-policy: strict)</h1>
+        <p
+          class="bigtext"
+          data-split-lines
+          data-reveal-mode="linear"
+          data-reveal-group="story-linear"
+          data-linear-policy="strict"
+        >
+          This text reveals line by line within its group. Nothing moves until
+          it is visible. Each line waits for the previous one to finish. The
+          order is deliberate, and the pace is controlled.
+        </p>
+        <br /><br />
+        <p
+          class="bigtext"
+          data-split-lines
+          data-reveal-mode="linear"
+          data-linear-policy="strict"
+          data-reveal-group="story-linear"
+        >
+          Blocks are connected by group, not by position alone. A block starts
+          only after the previous block in the same group has completed. Other
+          groups are unaffected and can run independently.
+        </p>
+        <br /><br />
+        <p
+          class="bigtext"
+          data-split-lines
+          data-reveal-mode="linear"
+          data-reveal-group="story-linear"
+          data-linear-policy="strict"
+        >
+          This creates a strict, linear flow per group. You cannot skip ahead
+          inside the sequence, but parallel groups remain free. One group
+          finishes before the next block in that group begins.
+        </p>
+      </div>
+
+      <div>
+        <h1>Linear (linear-policy: skip-unseen)</h1>
+        <p
+          class="bigtext"
+          data-split-lines
+          data-reveal-mode="linear"
+          data-reveal-group="story-skip-unseen"
+          data-linear-policy="skip-unseen"
+        >
+          Each block starts when it becomes visible. Lines still reveal in
+          sequence, but visibility decides when a block enters the flow.
+        </p>
+        <br /><br />
+        <p
+          class="bigtext"
+          data-split-lines
+          data-reveal-mode="linear"
+          data-reveal-group="story-skip-unseen"
+          data-linear-policy="skip-unseen"
+        >
+          Blocks only wait for earlier blocks that were also visible. If a block
+          was skipped, it does not block anything that comes after it.
+        </p>
+        <br /><br />
+        <p
+          class="bigtext"
+          data-split-lines
+          data-reveal-mode="linear"
+          data-reveal-group="story-skip-unseen"
+          data-linear-policy="skip-unseen"
+        >
+          This keeps the order where it matters, without forcing a strict path.
+          You can scroll freely, and the sequence adapts instead of breaking.
+        </p>
+      </div>
+
+      <p class="hint" data-split-lines data-reveal-mode="immediate">
+        Resize the window: lines are recalculated automatically.
+      </p>
+    </main>
+
+    <div class="spacer" data-split-lines>End</div>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
