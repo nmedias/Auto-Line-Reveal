@@ -58,6 +58,13 @@ export class AutoLineReveal {
   _resizeHandler: ((...args: unknown[]) => void) | null;
   _debounceMs: number;
 
+  /**
+   * Create a new AutoLineReveal instance scoped to a root container.
+   * @param {AutoLineRevealOptions} options Root, selector, and debounce configuration.
+   * @param {Document | Element} options.root Root element or document to scope queries.
+   * @param {string} options.selector Selector for reveal blocks.
+   * @param {number} options.debounceMs Debounce delay for resize handling.
+   */
   constructor({
     root = document,
     selector = '[data-split-lines]',
@@ -79,6 +86,11 @@ export class AutoLineReveal {
 
   // ---------- Public API ----------
 
+  /**
+   * Initialize the instance by splitting lines and optionally binding resize.
+   * @param {InitOptions} options Initialization options.
+   * @param {boolean} options.bindResize Whether to bind a resize listener.
+   */
   init({ bindResize = false }: InitOptions = {}) {
     this.rebuild();
 
@@ -91,6 +103,9 @@ export class AutoLineReveal {
     }
   }
 
+  /**
+   * Re-split all matching blocks and rebuild observers/queues.
+   */
   rebuild() {
     // Abort any running animations inside this instance scope
     this._abortAllRunning();
@@ -110,6 +125,9 @@ export class AutoLineReveal {
     this._setupBlockObserver(blocks);
   }
 
+  /**
+   * Tear down observers, queues, and any running animations.
+   */
   destroy() {
     // stop animations
     this._abortAllRunning();
@@ -130,6 +148,11 @@ export class AutoLineReveal {
 
   // ---------- Config ----------
 
+  /**
+   * Read and normalize per-block configuration from data attributes.
+   * @param {HTMLElement} block Block element to read configuration from.
+   * @returns {BlockConfig} Normalized configuration for the block.
+   */
   _getBlockConfig(block: HTMLElement): BlockConfig {
     const mode = (block.dataset.revealMode || 'immediate').toLowerCase();
     const group = (block.dataset.revealGroup || 'default').toString();
@@ -163,6 +186,10 @@ export class AutoLineReveal {
     };
   }
 
+  /**
+   * Read the global reveal duration from CSS, with a safe fallback.
+   * @returns {number} Duration in milliseconds.
+   */
   _revealDuration(): number {
     const v = getComputedStyle(document.documentElement)
       .getPropertyValue('--reveal-ms')
@@ -173,11 +200,19 @@ export class AutoLineReveal {
 
   // ---------- DOM helpers ----------
 
+  /**
+   * Find all blocks within the configured root and selector.
+   * @returns {HTMLElement[]} Matching block elements.
+   */
   _getBlocks(): HTMLElement[] {
     const scope = this.root instanceof Element ? this.root : document;
     return Array.from(scope.querySelectorAll(this.selector)) as HTMLElement[];
   }
 
+  /**
+   * Apply reveal classes and CSS custom properties for a block.
+   * @param {HTMLElement} block Block element to update.
+   */
   _applyRevealClasses(block: HTMLElement) {
     const cfg = this._getBlockConfig(block);
 
@@ -209,6 +244,11 @@ export class AutoLineReveal {
     block.style.setProperty('--anim-intensity', String(cfg.intensity));
   }
 
+  /**
+   * Split a block's text into lines using layout positions.
+   * @param {HTMLElement} el Block element to split.
+   * @returns {NodeListOf<HTMLElement>} NodeList of line elements.
+   */
   _splitIntoLines(el: HTMLElement): NodeListOf<HTMLElement> {
     // same logic, just scoped inside instance
     const text = el.textContent.replace(/\s+/g, ' ').trim();
@@ -284,6 +324,11 @@ export class AutoLineReveal {
 
   // ---------- Animation primitive ----------
 
+  /**
+   * Animate a single line and resolve when the animation completes.
+   * @param {HTMLElement} line Line element to animate.
+   * @returns {Promise<void>} Promise that resolves when animation completes.
+   */
   _animateLine(line: HTMLElement): Promise<void> {
     return new Promise((resolve) => {
       if (this.prefersReducedMotion) {
@@ -327,6 +372,11 @@ export class AutoLineReveal {
 
   // ---------- Per-line visibility gate ----------
 
+  /**
+   * Build an IntersectionObserver gate that resolves when lines become visible.
+   * @param {NodeListOf<HTMLElement> | HTMLElement[]} lines Line elements to observe.
+   * @returns {{ gate: Map<HTMLElement, { promise: Promise<void>; resolve: () => void; resolved: boolean }>, io: IntersectionObserver }} Gate map and observer instance.
+   */
   _createVisibilityGate(lines: NodeListOf<HTMLElement> | HTMLElement[]) {
     const gate = new Map<
       HTMLElement,
@@ -376,6 +426,12 @@ export class AutoLineReveal {
     return { gate, io };
   }
 
+  /**
+   * Reveal lines sequentially, waiting for each to enter the viewport.
+   * @param {NodeListOf<HTMLElement> | HTMLElement[]} lines Line elements to reveal.
+   * @param {AbortSignal} abortSignal Abort signal to cancel playback.
+   * @returns {Promise<void>} Promise that resolves when playback completes or is aborted.
+   */
   async _playLinesSequentiallyWhenVisible(
     lines: NodeListOf<HTMLElement> | HTMLElement[],
     abortSignal: AbortSignal
@@ -398,6 +454,11 @@ export class AutoLineReveal {
 
   // ---------- Group orchestration ----------
 
+  /**
+   * Create the queue for a linear reveal group.
+   * @param {string} groupName Group identifier.
+   * @param {HTMLElement[]} blocks Candidate block elements.
+   */
   _buildGroupQueue(groupName: string, blocks: HTMLElement[]) {
     const linearBlocks = blocks.filter((b) => {
       const cfg = this._getBlockConfig(b);
@@ -411,6 +472,11 @@ export class AutoLineReveal {
     this._groupQueues.set(groupName, { blocks: linearBlocks, state });
   }
 
+  /**
+   * Start the next eligible block in a linear group.
+   * @param {string} groupName Group identifier.
+   * @param {LinearPolicy} policy Linear reveal policy.
+   */
   _pumpGroupQueue(groupName: string, policy: LinearPolicy) {
     const q = this._groupQueues.get(groupName);
     if (!q) return;
@@ -459,6 +525,13 @@ export class AutoLineReveal {
     }
   }
 
+  /**
+   * Start revealing a single block and notify the queue on completion.
+   * @param {HTMLElement} block Block element to reveal.
+   * @param {GroupState} st Mutable state for the block within the group.
+   * @param {string} groupName Group identifier.
+   * @param {LinearPolicy} policy Linear reveal policy.
+   */
   _startBlock(
     block: HTMLElement,
     st: GroupState,
@@ -492,6 +565,10 @@ export class AutoLineReveal {
 
   // ---------- Block observer ----------
 
+  /**
+   * Observe blocks entering the viewport and trigger reveal behavior.
+   * @param {HTMLElement[]} blocks Block elements to observe.
+   */
   _setupBlockObserver(blocks: HTMLElement[]) {
     if (this._blockObserver) this._blockObserver.disconnect();
     this._groupQueues.clear();
@@ -547,6 +624,9 @@ export class AutoLineReveal {
 
   // ---------- Cleanup helpers ----------
 
+  /**
+   * Abort any running animations for current blocks.
+   */
   _abortAllRunning() {
     const blocks = this._getBlocks();
     for (const el of blocks) {
@@ -558,6 +638,12 @@ export class AutoLineReveal {
 
   // ---------- Utilities ----------
 
+  /**
+   * Debounce a function by the given delay.
+   * @param {(...args: unknown[]) => void} fn Function to debounce.
+   * @param {number} ms Debounce delay in milliseconds.
+   * @returns {(...args: unknown[]) => void} Debounced function.
+   */
   _debounce(fn: (...args: unknown[]) => void, ms = 120) {
     let t: ReturnType<typeof setTimeout> | undefined;
     return (...args: unknown[]) => {
@@ -566,6 +652,14 @@ export class AutoLineReveal {
     };
   }
 
+  /**
+   * Clamp a numeric value, falling back when not finite.
+   * @param {unknown} n Value to clamp.
+   * @param {number} min Minimum allowed value.
+   * @param {number} max Maximum allowed value.
+   * @param {number | null} fallback Fallback value when input is not finite.
+   * @returns {number | null} Clamped number or fallback.
+   */
   _clampNumber(n: unknown, min: number, max: number, fallback: null): number | null;
   _clampNumber(n: unknown, min: number, max: number, fallback: number): number;
   _clampNumber(
