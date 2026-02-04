@@ -160,7 +160,6 @@ export class AutoLineReveal {
     // same logic, just scoped inside instance
     const text = el.textContent.replace(/\s+/g, ' ').trim();
     el.textContent = '';
-    console.log(text);
 
     const linesContainer = document.createElement('span');
     linesContainer.className = 'reveal__lines';
@@ -168,6 +167,7 @@ export class AutoLineReveal {
 
     const words = text.split(' ');
     const wordSpans = [];
+    const spaceNodes = [];
 
     words.forEach((w, i) => {
       const s = document.createElement('span');
@@ -176,8 +176,11 @@ export class AutoLineReveal {
       linesContainer.appendChild(s);
       wordSpans.push(s);
 
-      if (i < words.length - 1)
-        linesContainer.appendChild(document.createTextNode(' '));
+      if (i < words.length - 1) {
+        const space = document.createTextNode(' ');
+        spaceNodes.push(space);
+        linesContainer.appendChild(space);
+      }
     });
 
     // group by layout lines
@@ -199,7 +202,7 @@ export class AutoLineReveal {
     if (currentLineWords.length) lines.push(currentLineWords);
 
     // rebuild
-    linesContainer.textContent = '';
+    const frag = document.createDocumentFragment();
 
     lines.forEach((lineWords) => {
       const line = document.createElement('span');
@@ -210,14 +213,17 @@ export class AutoLineReveal {
 
       lineWords.forEach((ws, j) => {
         inner.appendChild(ws);
-        if (j < lineWords.length - 1)
-          inner.appendChild(document.createTextNode(' '));
+        if (j < lineWords.length - 1) {
+          const space = spaceNodes[wordSpans.indexOf(ws)];
+          if (space) inner.appendChild(space);
+        }
       });
 
       line.appendChild(inner);
-      linesContainer.appendChild(line);
+      frag.appendChild(line);
     });
 
+    linesContainer.replaceChildren(frag);
     return linesContainer.querySelectorAll('.reveal__line');
   }
 
