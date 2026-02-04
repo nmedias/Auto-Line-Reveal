@@ -1,13 +1,26 @@
 {
-  "name": "vite-typescript-starter",
-  "private": true,
-  "version": "0.0.0",
+  "name": "auto-line-reveal",
+  "private": false,
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build && mkdir -p dist && cp src/style.css dist/style.css",
     "preview": "vite preview"
   },
+  "main": "./dist/auto-line-reveal.cjs",
+  "module": "./dist/auto-line-reveal.js",
+  "exports": {
+    ".": {
+      "import": "./dist/auto-line-reveal.js",
+      "require": "./dist/auto-line-reveal.cjs"
+    },
+    "./style.css": "./dist/style.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "style": "./dist/style.css",
   "devDependencies": {
     "typescript": "~5.9.3",
     "vite": "^7.3.1"
