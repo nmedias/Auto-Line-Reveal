@@ -1,28 +1,99 @@
-# auto-line-reveal
+# Auto Line Reveal
 
-Auto line-splitting reveal animation for text blocks. Lightweight, multi-instance, and configurable via data attributes.
+Sequential text animation with viewport-aware grouping.
 
-## Install
+This script splits text into real layout lines and reveals them sequentially.  
+Animations are triggered by viewport visibility and can be coordinated across multiple text blocks using groups and policies.
 
-```bash
-npm install auto-line-reveal
+No framework required.
+
+---
+
+## Core Concepts
+
+### 1. Line-based animation
+
+Text is split into **actual rendered lines**, not guessed by character count.  
+Each line animates **only when it becomes visible** and **only after the previous line has finished**.
+
+### 2. Block-based orchestration
+
+Each text block can define:
+
+- **when** it starts
+- **how** it relates to other blocks
+- **whether** order is enforced strictly or adaptively
+
+### 3. Grouping
+
+Blocks can be assigned to a **group**.  
+Sequencing rules apply **only within the same group**.
+
+Different groups run independently.
+
+---
+
+## Web Component Usage
+
+```html
+
+  <auto-line-reveal
+    reveal-mode="linear"
+    reveal-group="story"
+    linear-policy="skip-unseen"
+  >
+    Your text here…
+  </auto-line-reveal>
+
 ```
 
-## Usage (ESM)
+## Attributes
 
-```js
-import { AutoLineReveal } from 'auto-line-reveal';
-import 'auto-line-reveal/style.css';
+`reveal-mode`
 
-const reveal = new AutoLineReveal({
+`immediate` (default) or `linear`.
+
+`reveal-group`
+
+Group name for linear sequencing. Defaults to `default`.
+
+`linear-policy`
+
+`strict` or `skip-unseen` (default).
+
+`line-anim`
+
+`slide-clip` (default), `fade`, `blur-in`, or `diag-slice`.
+
+`line-anim-ms`
+
+Override line animation duration in ms.
+
+`line-anim-intensity`
+
+Controls animation strength (e.g., `0.25` to `2.0`).
+
+`debug`
+
+`true` or `false` to show reveal progress on each line.
+
+---
+
+## Web Component Setup 
+
+```ts
+import { defineAutoLineRevealElement } from 'auto-line-reveal';
+
+defineAutoLineRevealElement({
   root: document,
-  selector: '[data-split-lines]',
+  bindResize: true,
+  tagName: 'auto-line-reveal',
 });
-
-reveal.init({ bindResize: true });
 ```
 
-## TypeScript Usage
+You can use the Web Component and a manually instantiated `AutoLineReveal` in the same project (they operate independently as long as they target different selectors).
+
+## Manual Instantiation (ESM)
 
 ```ts
 import { AutoLineReveal } from 'auto-line-reveal';
@@ -30,52 +101,8 @@ import 'auto-line-reveal/style.css';
 
 const reveal = new AutoLineReveal({
   root: document,
-  selector: '[data-split-lines]'
-});
-
-reveal.init({ bindResize: true });
-```
-
-## Usage (CJS)
-
-```js
-const { AutoLineReveal } = require('auto-line-reveal');
-require('auto-line-reveal/style.css');
-
-const reveal = new AutoLineReveal({
-  root: document,
   selector: '[data-split-lines]',
 });
 
 reveal.init({ bindResize: true });
 ```
-
-## HTML
-
-```html
-<p data-split-lines>
-  Your text here
-</p>
-```
-
-## Data Attributes
-
-- `data-reveal-mode`: `immediate` (default) or `linear`
-- `data-reveal-group`: group name for linear sequencing (default `default`)
-- `data-linear-policy`: `skip-unseen` (default) or `strict`
-- `data-line-anim`: `slide-clip` (default), `fade`, `blur-in`, `diag-slice`
-- `data-line-anim-ms`: number override for animation duration
-- `data-line-anim-intensity`: number in range `0.25`–`2.0` (default `1`)
-- `data-debug`: `true` to show the reveal progress overlay
-
-## Public API
-
-- `new AutoLineReveal({ root, selector, debounceMs })`
-- `init({ bindResize })`
-- `rebuild()`
-- `destroy()`
-
-## Notes
-
-- CSS is required. Import `auto-line-reveal/style.css`.
-- If you dynamically remove elements or page sections, call `destroy()` on the instance.

@@ -10,176 +10,200 @@
     <link rel="stylesheet" href="src/style.css" />
   </head>
   <body>
-    <div class="spacer" data-split-lines>
-      Scroll down — lines animate only when they become visible
-    </div>
+  <auto-line-reveal class="spacer">
+    Scroll down — lines animate only when they become visible
+  </auto-line-reveal>
 
     <main class="stage">
+      <h1>Web Component</h1>
+
+        <auto-line-reveal reveal-mode="immediate" line-anim-ms="1900" class="bigtext">
+          My text, now as a web component.
+        </auto-line-reveal>
+
+
       <h1>Animation Variants</h1>
 
       <div>
         <h2>Clip Slide</h2>
-        <p
-          data-split-lines
-          data-reveal-mode="linear"
-          data-reveal-group="story-ani"
-          data-debug="false"
-          data-line-anim="slide-clip"
-          data-line-anim-ms="900"
-          data-line-anim-intensity=".2"
-        >
-          Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
-          nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,
-          sed diam voluptua. At vero eos et accusam et justo duo dolores et ea
-          rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem
-          ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur
-          sadipscing elitr,
+
+        <p>
+          <auto-line-reveal
+            reveal-mode="linear"
+            reveal-group="story-ani"
+            debug="false"
+            line-anim="slide-clip"
+            line-anim-ms="900"
+            line-anim-intensity=".2"
+          >
+            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
+            nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,
+            sed diam voluptua. At vero eos et accusam et justo duo dolores et ea
+            rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem
+            ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur
+            sadipscing elitr,
+          </auto-line-reveal>
         </p>
+
         <h2>Blur-In</h2>
-        <p
-          data-split-lines
-          data-reveal-mode="linear"
-          data-reveal-group="story-ani"
-          data-debug="false"
-          data-line-anim="blur-in"
-          data-line-anim-ms="900"
-          data-line-anim-intensity="0.5"
-        >
-          Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
-          nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,
-          sed diam voluptua. At vero eos et accusam et justo duo dolores et ea
-          rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem
-          ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur
-          sadipscing elitr,
+        <p>
+          <auto-line-reveal
+            reveal-mode="linear"
+            reveal-group="story-ani"
+            debug="false"
+            line-anim="blur-in"
+            line-anim-ms="900"
+            line-anim-intensity="0.5"
+          >
+            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
+            nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,
+            sed diam voluptua. At vero eos et accusam et justo duo dolores et ea
+            rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem
+            ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur
+            sadipscing elitr,
+          </auto-line-reveal>
         </p>
         <h2>Fade</h2>
-        <p
-          data-split-lines
-          data-reveal-mode="linear"
-          data-reveal-group="story-ani"
-          data-debug="false"
-          data-line-anim="fade"
-          data-line-anim-ms="900"
-          data-line-anim-intensity="1"
-        >
-          Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
-          nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,
-          sed diam voluptua. At vero eos et accusam et justo duo dolores et ea
-          rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem
-          ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur
-          sadipscing elitr,
+        <p>
+          <auto-line-reveal
+            reveal-mode="linear"
+            reveal-group="story-ani"
+            debug="false"
+            line-anim="fade"
+            line-anim-ms="900"
+            line-anim-intensity="1"
+          >
+            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
+            nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,
+            sed diam voluptua. At vero eos et accusam et justo duo dolores et ea
+            rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem
+            ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur
+            sadipscing elitr,
+          </auto-line-reveal>
         </p>
         <h2>Diag Slice</h2>
-        <p
-          data-split-lines
-          data-reveal-mode="linear"
-          data-reveal-group="story-ani"
-          data-debug="false"
-          data-line-anim="diag-slice"
-          data-line-anim-ms="1500"
-        >
-          Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
-          nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,
-          sed diam voluptua. At vero eos et accusam et justo duo dolores et ea
-          rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem
-          ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur
-          sadipscing elitr,
+        <p>
+          <auto-line-reveal
+            reveal-mode="linear"
+            reveal-group="story-ani"
+            debug="false"
+            line-anim="diag-slice"
+            line-anim-ms="1500"
+          >
+            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
+            nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,
+            sed diam voluptua. At vero eos et accusam et justo duo dolores et ea
+            rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem
+            ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur
+            sadipscing elitr,
+          </auto-line-reveal>
         </p>
       </div>
       <div>
         <h1>Immediate (default)</h1>
-        <p
-          class="bigtext"
-          data-split-lines
-          data-reveal-mode="immediate"
-          data-debug="false"
-        >
-          No framework, just browser physics.
+        <p>
+          <auto-line-reveal
+            class="bigtext"
+            reveal-mode="immediate"
+            debug="false"
+          >
+            No framework, just browser physics.
+          </auto-line-reveal>
         </p>
         <br />
         <br />
       </div>
       <div>
         <h1>Linear (linear-policy: strict)</h1>
-        <p
-          class="bigtext"
-          data-split-lines
-          data-reveal-mode="linear"
-          data-reveal-group="story-linear"
-          data-linear-policy="strict"
-        >
-          This text reveals line by line within its group. Nothing moves until
-          it is visible. Each line waits for the previous one to finish. The
-          order is deliberate, and the pace is controlled.
+        <p>
+          <auto-line-reveal
+            class="bigtext"
+            reveal-mode="linear"
+            reveal-group="story-linear"
+            linear-policy="strict"
+          >
+            This text reveals line by line within its group. Nothing moves until
+            it is visible. Each line waits for the previous one to finish. The
+            order is deliberate, and the pace is controlled.
+          </auto-line-reveal>
         </p>
         <br /><br />
-        <p
-          class="bigtext"
-          data-split-lines
-          data-reveal-mode="linear"
-          data-linear-policy="strict"
-          data-reveal-group="story-linear"
-        >
-          Blocks are connected by group, not by position alone. A block starts
-          only after the previous block in the same group has completed. Other
-          groups are unaffected and can run independently.
+        <p>
+          <auto-line-reveal
+            class="bigtext"
+            reveal-mode="linear"
+            linear-policy="strict"
+            reveal-group="story-linear"
+          >
+            Blocks are connected by group, not by position alone. A block starts
+            only after the previous block in the same group has completed. Other
+            groups are unaffected and can run independently.
+          </auto-line-reveal>
         </p>
         <br /><br />
-        <p
-          class="bigtext"
-          data-split-lines
-          data-reveal-mode="linear"
-          data-reveal-group="story-linear"
-          data-linear-policy="strict"
-        >
-          This creates a strict, linear flow per group. You cannot skip ahead
-          inside the sequence, but parallel groups remain free. One group
-          finishes before the next block in that group begins.
+        <p>
+          <auto-line-reveal
+            class="bigtext"
+            reveal-mode="linear"
+            reveal-group="story-linear"
+            linear-policy="strict"
+          >
+            This creates a strict, linear flow per group. You cannot skip ahead
+            inside the sequence, but parallel groups remain free. One group
+            finishes before the next block in that group begins.
+          </auto-line-reveal>
         </p>
       </div>
 
       <div>
         <h1>Linear (linear-policy: skip-unseen)</h1>
-        <p
-          class="bigtext"
-          data-split-lines
-          data-reveal-mode="linear"
-          data-reveal-group="story-skip-unseen"
-          data-linear-policy="skip-unseen"
-        >
-          Each block starts when it becomes visible. Lines still reveal in
-          sequence, but visibility decides when a block enters the flow.
+        <p>
+          <auto-line-reveal
+            class="bigtext"
+            reveal-mode="linear"
+            reveal-group="story-skip-unseen"
+            linear-policy="skip-unseen"
+          >
+            Each block starts when it becomes visible. Lines still reveal in
+            sequence, but visibility decides when a block enters the flow.
+          </auto-line-reveal>
         </p>
         <br /><br />
-        <p
-          class="bigtext"
-          data-split-lines
-          data-reveal-mode="linear"
-          data-reveal-group="story-skip-unseen"
-          data-linear-policy="skip-unseen"
-        >
-          Blocks only wait for earlier blocks that were also visible. If a block
-          was skipped, it does not block anything that comes after it.
+        <p>
+          <auto-line-reveal
+            class="bigtext"
+            reveal-mode="linear"
+            reveal-group="story-skip-unseen"
+            linear-policy="skip-unseen"
+          >
+            Blocks only wait for earlier blocks that were also visible. If a block
+            was skipped, it does not block anything that comes after it.
+          </auto-line-reveal>
         </p>
         <br /><br />
-        <p
-          class="bigtext"
-          data-split-lines
-          data-reveal-mode="linear"
-          data-reveal-group="story-skip-unseen"
-          data-linear-policy="skip-unseen"
-        >
-          This keeps the order where it matters, without forcing a strict path.
-          You can scroll freely, and the sequence adapts instead of breaking.
+        <p>
+          <auto-line-reveal
+            class="bigtext"
+            reveal-mode="linear"
+            reveal-group="story-skip-unseen"
+            linear-policy="skip-unseen"
+          >
+            This keeps the order where it matters, without forcing a strict path.
+            You can scroll freely, and the sequence adapts instead of breaking.
+          </auto-line-reveal>
         </p>
       </div>
 
-      <p class="hint" data-split-lines data-reveal-mode="immediate">
-        Resize the window: lines are recalculated automatically.
-      </p>
+
+        <auto-line-reveal class="hint" reveal-mode="immediate">
+          Resize the window: lines are recalculated automatically.
+        </auto-line-reveal>
+
     </main>
 
-    <div class="spacer" data-split-lines>End</div>
+
+      <auto-line-reveal class="spacer">End</auto-line-reveal>
+
     <script type="module" src="./src/main.ts"></script>
   </body>
 </html>
