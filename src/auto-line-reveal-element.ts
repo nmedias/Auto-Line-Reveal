@@ -85,6 +85,7 @@ export class AutoLineRevealElement extends HTMLElement {
   private _ensureMutationObserver() {
     if (this._mutationObserver) return;
     this._mutationObserver = new MutationObserver(() => {
+      if (this.querySelector('.reveal__lines')) return;
       const currentText = this.textContent ?? '';
       if (currentText === this._lastTextContent) return;
       this._lastTextContent = currentText;
