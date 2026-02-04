@@ -85,10 +85,10 @@ export class AutoLineRevealElement extends HTMLElement {
   private _ensureMutationObserver() {
     if (this._mutationObserver) return;
     this._mutationObserver = new MutationObserver(() => {
-      if (this.querySelector('.reveal__lines')) return;
-      const currentText = this.textContent ?? '';
-      if (currentText === this._lastTextContent) return;
-      this._lastTextContent = currentText;
+      const externalText = this._getExternalText();
+      if (!externalText) return;
+      if (externalText === this._lastTextContent) return;
+      this._lastTextContent = externalText;
       delete this.dataset.originalText;
       queueRebuild();
     });
@@ -103,6 +103,28 @@ export class AutoLineRevealElement extends HTMLElement {
     if (!this._mutationObserver) return;
     this._mutationObserver.disconnect();
     this._mutationObserver = null;
+  }
+
+  private _getExternalText() {
+    const walker = document.createTreeWalker(
+      this,
+      NodeFilter.SHOW_TEXT,
+      null
+    );
+
+    let result = '';
+    let node: Node | null = walker.nextNode();
+    while (node) {
+      const parent = node.parentElement;
+      if (parent && parent.closest('.reveal__lines')) {
+        node = walker.nextNode();
+        continue;
+      }
+      result += node.textContent ?? '';
+      node = walker.nextNode();
+    }
+
+    return result.replace(/\s+/g, ' ').trim();
   }
 }
 
