@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   build: {
+    minify: 'terser',
     lib: {
       entry: 'src/index.js',
       name: 'AutoLineReveal',

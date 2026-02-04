@@ -22,6 +22,7 @@
   ],
   "style": "./dist/style.css",
   "devDependencies": {
+    "terser": "^5.46.0",
     "typescript": "~5.9.3",
     "vite": "^7.3.1"
   }
