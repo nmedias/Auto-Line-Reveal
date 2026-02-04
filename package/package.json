@@ -23,8 +23,7 @@
   },
   "files": [
     "dist",
-    "web-types.json",
-    "custom-elements.json"
+    "web-types.json"
   ],
   "style": "./dist/style.css",
   "devDependencies": {

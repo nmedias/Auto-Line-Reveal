@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "2.1.0",
+  "readme": "README.md",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "src/auto-line-reveal-element.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "name": "AutoLineRevealElement",
+          "tagName": "auto-line-reveal",
+          "customElement": true,
+          "description": "Reveal text line-by-line based on real layout lines.",
+          "attributes": [
+            {
+              "name": "reveal-mode",
+              "description": "immediate (default) or linear.",
+              "type": { "text": "string" }
+            },
+            {
+              "name": "reveal-group",
+              "description": "Group name for linear sequencing.",
+              "type": { "text": "string" }
+            },
+            {
+              "name": "linear-policy",
+              "description": "strict or skip-unseen (default).",
+              "type": { "text": "string" }
+            },
+            {
+              "name": "line-anim",
+              "description": "slide-clip (default), fade, blur-in, or diag-slice.",
+              "type": { "text": "string" }
+            },
+            {
+              "name": "line-anim-ms",
+              "description": "Override line animation duration in ms.",
+              "type": { "text": "number" }
+            },
+            {
+              "name": "line-anim-intensity",
+              "description": "Controls animation strength (e.g., 0.25 to 2.0).",
+              "type": { "text": "number" }
+            },
+            {
+              "name": "debug",
+              "description": "true or false to show reveal progress on each line.",
+              "type": { "text": "boolean" }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "auto-line-reveal",
+          "declaration": {
+            "name": "AutoLineRevealElement",
+            "module": "src/auto-line-reveal-element.ts"
+          }
+        }
+      ]
+    }
+  ]
+}
