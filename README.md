@@ -36,15 +36,9 @@ Different groups run independently.
 ## Web Component Usage
 
 ```html
-
-  <auto-line-reveal
-    reveal-mode="linear"
-    reveal-group="story"
-    linear-policy="skip-unseen"
-  >
-    Your text here…
-  </auto-line-reveal>
-
+<auto-line-reveal reveal-mode="linear" reveal-group="story" linear-policy="skip-unseen">
+  Your text here…
+</auto-line-reveal>
 ```
 
 ## Attributes
@@ -79,7 +73,7 @@ Controls animation strength (e.g., `0.25` to `2.0`).
 
 ---
 
-## Web Component Setup 
+## Web Component Setup
 
 ```ts
 import { defineAutoLineRevealElement } from 'auto-line-reveal';

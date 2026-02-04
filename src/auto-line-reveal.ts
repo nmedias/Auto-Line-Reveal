@@ -74,8 +74,7 @@ export class AutoLineReveal {
     this.selector = selector;
 
     this.prefersReducedMotion =
-      window.matchMedia &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     this._blockObserver = null;
     this._running = new WeakMap(); // block -> AbortController
@@ -95,10 +94,7 @@ export class AutoLineReveal {
     this.rebuild();
 
     if (bindResize) {
-      this._resizeHandler = this._debounce(
-        () => this.rebuild(),
-        this._debounceMs
-      );
+      this._resizeHandler = this._debounce(() => this.rebuild(), this._debounceMs);
       window.addEventListener('resize', this._resizeHandler);
     }
   }
@@ -156,9 +152,7 @@ export class AutoLineReveal {
   _getBlockConfig(block: HTMLElement): BlockConfig {
     const mode = (block.dataset.revealMode || 'immediate').toLowerCase();
     const group = (block.dataset.revealGroup || 'default').toString();
-    const policyRaw = (
-      block.dataset.linearPolicy || 'skip-unseen'
-    ).toLowerCase();
+    const policyRaw = (block.dataset.linearPolicy || 'skip-unseen').toLowerCase();
 
     const animRaw = (block.dataset.lineAnim || 'slide-clip').toLowerCase();
     const anim: LineAnim =
@@ -167,13 +161,7 @@ export class AutoLineReveal {
         : 'slide-clip';
 
     const animMs = this._clampNumber(block.dataset.lineAnimMs, 80, 6000, null);
-    let intensity = this._clampNumber(
-      block.dataset.lineAnimIntensity,
-      0.25,
-      2.0,
-      1
-    );
-
+    const intensity = this._clampNumber(block.dataset.lineAnimIntensity, 0.25, 2.0, 1);
 
     return {
       mode: mode === 'linear' ? 'linear' : 'immediate',
@@ -191,9 +179,7 @@ export class AutoLineReveal {
    * @returns {number} Duration in milliseconds.
    */
   _revealDuration(): number {
-    const v = getComputedStyle(document.documentElement)
-      .getPropertyValue('--reveal-ms')
-      .trim();
+    const v = getComputedStyle(document.documentElement).getPropertyValue('--reveal-ms').trim();
     const n = parseInt(v, 10);
     return Number.isFinite(n) ? n : 700;
   }
@@ -223,22 +209,21 @@ export class AutoLineReveal {
       'reveal--anim-slide-clip',
       'reveal--anim-fade',
       'reveal--anim-blur-in',
-      'reveal--anim-diag-slice'
+      'reveal--anim-diag-slice',
     );
 
     const animClass =
       cfg.anim === 'fade'
         ? 'reveal--anim-fade'
         : cfg.anim === 'blur-in'
-        ? 'reveal--anim-blur-in'
-        : cfg.anim === 'diag-slice'
-        ? 'reveal--anim-diag-slice'
-        : 'reveal--anim-slide-clip';
+          ? 'reveal--anim-blur-in'
+          : cfg.anim === 'diag-slice'
+            ? 'reveal--anim-diag-slice'
+            : 'reveal--anim-slide-clip';
 
     block.classList.add(animClass);
 
-    if (cfg.animMs != null)
-      block.style.setProperty('--anim-ms', `${cfg.animMs}ms`);
+    if (cfg.animMs != null) block.style.setProperty('--anim-ms', `${cfg.animMs}ms`);
     else block.style.removeProperty('--anim-ms');
 
     block.style.setProperty('--anim-intensity', String(cfg.intensity));
@@ -340,8 +325,7 @@ export class AutoLineReveal {
       const block = line.closest(this.selector) as HTMLElement | null;
       const cfg = block ? this._getBlockConfig(block) : null;
 
-      const durationMs =
-        cfg?.animMs != null ? cfg.animMs : this._revealDuration();
+      const durationMs = cfg?.animMs != null ? cfg.animMs : this._revealDuration();
       const debugEnabled = !!cfg?.debug;
 
       const endAt = performance.now() + durationMs;
@@ -390,7 +374,7 @@ export class AutoLineReveal {
     };
 
     lines.forEach((line) => {
-      let resolveFn= () => {};
+      let resolveFn = () => {};
       const promise = new Promise<void>((res) => {
         resolveFn = res;
       });
@@ -415,7 +399,7 @@ export class AutoLineReveal {
           io.unobserve(e.target);
         }
       },
-      { threshold: 0.25, rootMargin: '0px 0px -10% 0px' }
+      { threshold: 0.25, rootMargin: '0px 0px -10% 0px' },
     );
 
     lines.forEach((line) => {
@@ -434,7 +418,7 @@ export class AutoLineReveal {
    */
   async _playLinesSequentiallyWhenVisible(
     lines: NodeListOf<HTMLElement> | HTMLElement[],
-    abortSignal: AbortSignal
+    abortSignal: AbortSignal,
   ): Promise<void> {
     const { gate, io } = this._createVisibilityGate(lines);
     try {
@@ -466,8 +450,7 @@ export class AutoLineReveal {
     });
 
     const state = new WeakMap();
-    for (const b of linearBlocks)
-      state.set(b, { ready: false, started: false, done: false });
+    for (const b of linearBlocks) state.set(b, { ready: false, started: false, done: false });
 
     this._groupQueues.set(groupName, { blocks: linearBlocks, state });
   }
@@ -532,12 +515,7 @@ export class AutoLineReveal {
    * @param {string} groupName Group identifier.
    * @param {LinearPolicy} policy Linear reveal policy.
    */
-  _startBlock(
-    block: HTMLElement,
-    st: GroupState,
-    groupName: string,
-    policy: LinearPolicy
-  ) {
+  _startBlock(block: HTMLElement, st: GroupState, groupName: string, policy: LinearPolicy) {
     const lines = block.querySelectorAll<HTMLElement>('.reveal__line');
     if (!lines.length) {
       st.done = true;
@@ -599,7 +577,7 @@ export class AutoLineReveal {
 
             void this._playLinesSequentiallyWhenVisible(
               block.querySelectorAll<HTMLElement>('.reveal__line'),
-              ac.signal
+              ac.signal,
             );
 
             observer.unobserve(block);
@@ -616,7 +594,7 @@ export class AutoLineReveal {
           this._pumpGroupQueue(cfg.group, cfg.policy);
         }
       },
-      { threshold: 0.2, rootMargin: '0px 0px 0px 0px' }
+      { threshold: 0.2, rootMargin: '0px 0px 0px 0px' },
     );
 
     for (const el of blocks) this._blockObserver.observe(el);
@@ -662,15 +640,9 @@ export class AutoLineReveal {
    */
   _clampNumber(n: unknown, min: number, max: number, fallback: null): number | null;
   _clampNumber(n: unknown, min: number, max: number, fallback: number): number;
-  _clampNumber(
-    n: unknown,
-    min: number,
-    max: number,
-    fallback: number | null
-  ): number | null {
+  _clampNumber(n: unknown, min: number, max: number, fallback: number | null): number | null {
     const x = Number(n);
     if (!Number.isFinite(x)) return fallback;
     return Math.min(max, Math.max(min, x));
   }
-
 }

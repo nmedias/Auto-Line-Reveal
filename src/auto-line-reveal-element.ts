@@ -63,7 +63,7 @@ export class AutoLineRevealElement extends HTMLElement {
    * Attributes to watch so `attributeChangedCallback` fires on updates.
    * @returns {string[]} Observed attribute names.
    */
-  static get observedAttributes():string[] {
+  static get observedAttributes(): string[] {
     return Object.keys(attributeMap);
   }
 
@@ -71,7 +71,7 @@ export class AutoLineRevealElement extends HTMLElement {
    * Element lifecycle: connect, sync attributes, and rebuild.
    * @returns {void}
    */
-  connectedCallback():void {
+  connectedCallback(): void {
     this._syncAttributesToDataset();
     this._lastTextContent = this.textContent ?? '';
     this._ensureMutationObserver();
@@ -82,7 +82,7 @@ export class AutoLineRevealElement extends HTMLElement {
    * Element lifecycle: disconnect and rebuild.
    * @returns {void}
    */
-  disconnectedCallback():void {
+  disconnectedCallback(): void {
     this._disconnectMutationObserver();
     queueRebuild();
   }
@@ -91,7 +91,7 @@ export class AutoLineRevealElement extends HTMLElement {
    * Handle observed attribute changes by syncing and rebuilding.
    * @returns {void}
    */
-  attributeChangedCallback():void {
+  attributeChangedCallback(): void {
     this._syncAttributesToDataset();
     queueRebuild();
   }
@@ -146,11 +146,7 @@ export class AutoLineRevealElement extends HTMLElement {
    * @returns {string} Normalized external text content.
    */
   private _getExternalText(): string {
-    const walker = document.createTreeWalker(
-      this,
-      NodeFilter.SHOW_TEXT,
-      null
-    );
+    const walker = document.createTreeWalker(this, NodeFilter.SHOW_TEXT, null);
 
     let result = '';
     let node: Node | null = walker.nextNode();
@@ -176,9 +172,7 @@ export class AutoLineRevealElement extends HTMLElement {
  * @param {string} options.tagName Tag name for the custom element.
  * @returns {void}
  */
-export const defineAutoLineRevealElement = (
-  options: DefineOptions = {}
-): void => {
+export const defineAutoLineRevealElement = (options: DefineOptions = {}): void => {
   const tagName = options.tagName ?? DEFAULT_TAG;
   sharedRoot = options.root ?? DEFAULT_ROOT;
   sharedBindResize = options.bindResize ?? DEFAULT_BIND_RESIZE;

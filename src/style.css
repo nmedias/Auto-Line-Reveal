@@ -28,7 +28,13 @@
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial,
+  font-family:
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    Helvetica,
+    Arial,
     sans-serif;
   background: var(--bg);
   color: var(--fg);
@@ -186,7 +192,8 @@ p {
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
 
-  transition: --reveal var(--anim-ms) var(--anim-ease),
+  transition:
+    --reveal var(--anim-ms) var(--anim-ease),
     opacity calc(var(--anim-ms) * 0.6) ease-out,
     transform var(--anim-ms) var(--anim-ease);
 
@@ -207,7 +214,8 @@ p {
   .reveal--anim-slide-clip .reveal__line {
     overflow: hidden;
     clip-path: inset(0 100% 0 0);
-    transition: clip-path var(--anim-ms) var(--anim-ease),
+    transition:
+      clip-path var(--anim-ms) var(--anim-ease),
       opacity calc(var(--anim-ms) * 0.6) ease-out,
       transform var(--anim-ms) var(--anim-ease);
   }
@@ -224,7 +232,8 @@ p {
 .reveal--anim-fade .reveal__line {
   opacity: 0;
   transform: translateY(calc(1px * var(--anim-intensity)));
-  transition: opacity var(--anim-ms) var(--anim-ease),
+  transition:
+    opacity var(--anim-ms) var(--anim-ease),
     transform var(--anim-ms) var(--anim-ease);
   will-change: opacity, transform;
 }
@@ -241,7 +250,8 @@ p {
 .reveal--anim-blur-in .reveal__line {
   opacity: 0;
   transform: translateY(calc(2px * var(--anim-intensity)));
-  transition: opacity var(--anim-ms) var(--anim-ease),
+  transition:
+    opacity var(--anim-ms) var(--anim-ease),
     transform var(--anim-ms) var(--anim-ease);
   will-change: opacity, transform;
 }
@@ -268,7 +278,8 @@ p {
 .reveal--anim-diag-slice .reveal__line {
   opacity: 0; /* wir lassen opacity an, der Schnitt macht die Arbeit */
   transform: translateY(calc(2px * var(--anim-intensity)));
-  transition: clip-path var(--anim-ms) var(--anim-ease),
+  transition:
+    clip-path var(--anim-ms) var(--anim-ease),
     transform var(--anim-ms) var(--anim-ease);
 
   will-change: clip-path, transform;

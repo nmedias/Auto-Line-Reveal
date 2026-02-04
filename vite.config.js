@@ -7,8 +7,7 @@ export default defineConfig({
       entry: 'src/index.ts',
       name: 'AutoLineReveal',
       formats: ['es', 'cjs'],
-      fileName: (format) =>
-        format === 'cjs' ? 'auto-line-reveal.cjs' : 'auto-line-reveal.js',
+      fileName: (format) => (format === 'cjs' ? 'auto-line-reveal.cjs' : 'auto-line-reveal.js'),
     },
     rollupOptions: {
       output: {
